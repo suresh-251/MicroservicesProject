@@ -1,0 +1,143 @@
+services:
+
+  # ----------------------------
+  # Eureka Discovery Server
+  # ----------------------------
+  eureka-server:
+    build: ./discovery-server
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-net
+    restart: always
+
+  # ----------------------------
+  # API Gateway
+  # ----------------------------
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-net
+    restart: always
+
+  # ----------------------------
+  # User Service + MySQL
+  # ----------------------------
+  mysql-user:
+    image: mysql:8.1
+    container_name: mysql-user
+    environment:
+      MYSQL_ROOT_PASSWORD: 9090
+      MYSQL_DATABASE: usersdb
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-user-data:/var/lib/mysql
+    networks:
+      - microservices-net
+    restart: always
+
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - mysql-user
+    networks:
+      - microservices-net
+    restart: always
+
+  # ----------------------------
+  # Order Service + MySQL
+  # ----------------------------
+  mysql-order:
+    image: mysql:8.1
+    container_name: mysql-order
+    environment:
+      MYSQL_ROOT_PASSWORD: 9090
+      MYSQL_DATABASE: ordersdb
+    ports:
+      - "3308:3306"
+    volumes:
+      - mysql-order-data:/var/lib/mysql
+    networks:
+      - microservices-net
+    restart: always
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - mysql-order
+    networks:
+      - microservices-net
+    restart: always
+
+  # ----------------------------
+  # Product Service + MySQL
+  # ----------------------------
+  mysql-product:
+    image: mysql:8.1
+    container_name: mysql-product
+    environment:
+      MYSQL_ROOT_PASSWORD: 9090
+      MYSQL_DATABASE: productsdb
+    ports:
+      - "3309:3306"
+    volumes:
+      - mysql-product-data:/var/lib/mysql
+    networks:
+      - microservices-net
+    restart: always
+
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - mysql-product
+    networks:
+      - microservices-net
+    restart: always
+
+  # ----------------------------
+  # Payment Service (No DB)
+  # ----------------------------
+  payment-service:
+    build: ./payment-service
+    container_name: payment-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+    networks:
+      - microservices-net
+    restart: always
+
+# ----------------------------
+# Docker network
+# ----------------------------
+networks:
+  microservices-net:
+    driver: bridge
+
+# ----------------------------
+# Volumes for MySQL persistence
+# ----------------------------
+volumes:
+  mysql-user-data:
+  mysql-order-data:
+  mysql-product-data:

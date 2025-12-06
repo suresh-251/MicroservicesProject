@@ -1,0 +1,63 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      routes:
+        # -----------------------------
+        # PRODUCT-SERVICE ROUTE
+        # -----------------------------
+        - id: product-service
+          uri: lb://PRODUCT-SERVICE
+          predicates:
+            - Path=/products/**         # Whenever a request matches /product/**
+
+        - id: order-service
+          uri: lb://ORDER-SERVICE
+          predicates:
+              - Path=/orders/**
+
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/users/**
+
+        - id: payment-service
+          uri: lb://PAYMENT-SERVICE
+          predicates:
+            - Path=/payments/**
+
+        - id: auth-service
+          uri: lb://AUTH-SERVICE
+          predicates:
+            - Path=/auth/**
+
+
+
+
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+
+# -----------------------------
+# FALLBACK ENDPOINTS
+# -----------------------------
+# When CircuitBreaker triggers → forward to /fallback/product
+# You will create a RestController for these fallback endpoints.
+# Example controller will be provided if you need.
+# -----------------------------
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
