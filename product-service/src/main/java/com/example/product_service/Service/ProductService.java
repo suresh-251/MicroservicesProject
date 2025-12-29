@@ -29,7 +29,7 @@ public class ProductService {
         return repository.save(product);
     }
 
-    public  Product getProductById(Long id) {
+    public   Product getProductById(Long id) {
         return repository.findById(id).orElseThrow(()->new RuntimeException("product not found"));
     }
 

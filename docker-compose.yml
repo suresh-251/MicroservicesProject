@@ -5,7 +5,7 @@ services:
   # ----------------------------
   eureka-server:
     build: ./discovery-server
-    container_name: eureka-server
+    image: suresh2511/eureka-server:latest
     ports:
       - "8761:8761"
     networks:
@@ -17,7 +17,7 @@ services:
   # ----------------------------
   api-gateway:
     build: ./api-gateway
-    container_name: api-gateway
+    image: suresh2511/api-gateway:latest
     ports:
       - "8080:8080"
     depends_on:
@@ -31,7 +31,6 @@ services:
   # ----------------------------
   mysql-user:
     image: mysql:8.1
-    container_name: mysql-user
     environment:
       MYSQL_ROOT_PASSWORD: 9090
       MYSQL_DATABASE: usersdb
@@ -45,7 +44,7 @@ services:
 
   user-service:
     build: ./user-service
-    container_name: user-service
+    image: suresh2511/user-service:latest
     ports:
       - "8083:8083"
     depends_on:
@@ -60,7 +59,6 @@ services:
   # ----------------------------
   mysql-order:
     image: mysql:8.1
-    container_name: mysql-order
     environment:
       MYSQL_ROOT_PASSWORD: 9090
       MYSQL_DATABASE: ordersdb
@@ -74,7 +72,7 @@ services:
 
   order-service:
     build: ./order-service
-    container_name: order-service
+    image: suresh2511/order-service:latest
     ports:
       - "8082:8082"
     depends_on:
@@ -89,7 +87,6 @@ services:
   # ----------------------------
   mysql-product:
     image: mysql:8.1
-    container_name: mysql-product
     environment:
       MYSQL_ROOT_PASSWORD: 9090
       MYSQL_DATABASE: productsdb
@@ -103,7 +100,7 @@ services:
 
   product-service:
     build: ./product-service
-    container_name: product-service
+    image: suresh2511/product-service:latest
     ports:
       - "8081:8081"
     depends_on:
@@ -114,11 +111,11 @@ services:
     restart: always
 
   # ----------------------------
-  # Payment Service (No DB)
+  # Payment Service
   # ----------------------------
   payment-service:
     build: ./payment-service
-    container_name: payment-service
+    image: suresh2511/payment-service:latest
     ports:
       - "8084:8084"
     depends_on:
@@ -128,14 +125,14 @@ services:
     restart: always
 
 # ----------------------------
-# Docker network
+# Network
 # ----------------------------
 networks:
   microservices-net:
     driver: bridge
 
 # ----------------------------
-# Volumes for MySQL persistence
+# Volumes
 # ----------------------------
 volumes:
   mysql-user-data:
